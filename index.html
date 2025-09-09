@@ -1,1 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <base target="_top">
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+        #player-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
+        #unmuteButton {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60vw; max-width: 300px; padding: 5vw 3vw; font-size: 4.5vw;
+            max-font-size: 28px; font-weight: bold; color: white; background-color: rgba(0, 0, 0, 0.75);
+            border: 3px solid white; border-radius: 20px; cursor: pointer; z-index: 10;
+            white-space: normal; word-break: keep-all; text-align: center; display: flex;
+            justify-content: center; align-items: center; box-sizing: border-box; line-height: 1.3;
+        }
+        @media (max-width: 400px) {
+            #unmuteButton { font-size: 20px; }
+        }
+    </style>
+    <meta property="og:title" content="나만의 쇼츠 플레이어"/>
+    <meta property="og:description" content="최신 쇼츠를 연속으로 재생합니다"/>
+    <meta property="og:image" content="https://example.com/thumbnail.jpg"/>
+    <meta property="og:url" content="https://myusername.github.io/shorts-player/"/>
+    <meta property="og:type" content="website" />
+</head>
+<body>
+    <div id="player-container">
+        <div id="player"></div>
+        <button id="unmuteButton">터치하여 소리 켜기</button>
+    </div>
+    <script>
+        const videoIds = ["i8aUhjO9EC4","US3itEGzTb8","o2s7Rhtgwos","4Y6FewmrBRA","ya9EXLwiy94"];
+        let player;
+        let currentIndex = 0;
 
+        function onYouTubeIframeAPIReady() {
+            if (videoIds && videoIds.length > 0) {
+                player = new YT.Player('player', {
+                    height: '100%', 
+                    width: '100%', 
+                    videoId: videoIds[0],
+                    playerVars: { 
+                        'autoplay': 1, 
+                        'mute': 1, 
+                        'controls': 1, 
+                        'loop': 0, 
+                        'rel': 0, 
+                        'playsinline': 1,
+                        'playlist': videoIds.slice(1).join(',')
+                    },
+                    events: { 
+                        'onReady': onPlayerReady, 
+                        'onStateChange': onPlayerStateChange 
+                    }
+                });
+            } else {
+                document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
+            }
+        }
+
+        function onPlayerReady(event) {
+            if (videoIds.length > 1) {
+                event.target.loadPlaylist({
+                    'playlist': videoIds,
+                    'index': 0,
+                    'startSeconds': 0,
+                    'suggestedQuality': 'default'
+                });
+            }
+            
+            const unmuteBtn = document.getElementById('unmuteButton');
+            if (player.isMuted()) {
+                unmuteBtn.style.display = 'flex';
+            }
+            
+            unmuteBtn.addEventListener('click', () => {
+                player.unMute();
+                unmuteBtn.style.display = 'none';
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+                const unmuteBtn = document.getElementById('unmuteButton');
+                if (!player.isMuted()) {
+                    unmuteBtn.style.display = 'none';
+                }
+            }
+
+            if (event.data === YT.PlayerState.ENDED) {
+                const playlistLength = videoIds.length;
+                const currentIndex = player.getPlaylistIndex();
+                
+                if (currentIndex >= playlistLength - 1) {
+                    player.playVideoAt(0);
+                } else {
+                    player.nextVideo();
+                }
+            }
+        }
+    </script>
+    <script async src="https://www.youtube.com/iframe_api"></script>
+</body>
+</html>
