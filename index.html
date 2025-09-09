@@ -43,10 +43,10 @@
                         'autoplay': 1, 
                         'mute': 1, 
                         'controls': 1, 
-                        'loop': 0, 
                         'rel': 0, 
                         'playsinline': 1,
-                        'playlist': videoIds.slice(1).join(',')
+                        'loop': 1,
+                        'playlist': videoIds.join(',')
                     },
                     events: { 
                         'onReady': onPlayerReady, 
@@ -59,15 +59,6 @@
         }
 
         function onPlayerReady(event) {
-            if (videoIds.length > 1) {
-                event.target.loadPlaylist({
-                    'playlist': videoIds,
-                    'index': 0,
-                    'startSeconds': 0,
-                    'suggestedQuality': 'default'
-                });
-            }
-            
             const unmuteBtn = document.getElementById('unmuteButton');
             if (player.isMuted()) {
                 unmuteBtn.style.display = 'flex';
@@ -84,17 +75,6 @@
                 const unmuteBtn = document.getElementById('unmuteButton');
                 if (!player.isMuted()) {
                     unmuteBtn.style.display = 'none';
-                }
-            }
-
-            if (event.data === YT.PlayerState.ENDED) {
-                const playlistLength = videoIds.length;
-                const currentIndex = player.getPlaylistIndex();
-                
-                if (currentIndex >= playlistLength - 1) {
-                    player.playVideoAt(0);
-                } else {
-                    player.nextVideo();
                 }
             }
         }
