@@ -30,7 +30,7 @@
         <button id="unmuteButton">터치하여 소리 켜기</button>
     </div>
     <script>
-        const videoIds = ["4QGt-wlmoy4","6Z7z19HN-Qs","UKJQXi44JIU","aQlMrwqN1gk","sUc_oed-ztw","8o3dbBpZkU8","e36kBGoB-Nk","QCsOaLOwgHA","QXGnFi9KLoA","gOlf8b8u-f4","pY4_mCuwR_I","BHK3dDPC6aY","EH6QzyQW8X8","iBnmRrtDXTI","uwNjj9zVPy4","4VoWaNXQqQ8","hflEMLXTqzE","3ApiFnz7rbQ","kcMoseRQ-SU","9lW9_2p6JXM"];
+        const videoIds = ["4QGt-wlmoy4","1JQam-L8bT4","tQFjs0g6Uh0","FVocLtnvL3M","vQHdlRGL7NM","rZVAuE8LTiI"];
         let player;
 
         function onYouTubeIframeAPIReady() {
@@ -40,18 +40,10 @@
                     width: '100%', 
                     videoId: videoIds[0],
                     playerVars: { 
-                        'autoplay': 1, 
-                        'mute': 1, 
-                        'controls': 1, 
-                        'rel': 0, 
-                        'playsinline': 1,
-                        'loop': 1,
-                        'playlist': videoIds.join(',')
+                        'autoplay': 1, 'mute': 1, 'controls': 1, 'rel': 0, 
+                        'playsinline': 1, 'loop': 1, 'playlist': videoIds.join(',')
                     },
-                    events: { 
-                        'onReady': onPlayerReady, 
-                        'onStateChange': onPlayerStateChange 
-                    }
+                    events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange }
                 });
             } else {
                 document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
@@ -60,10 +52,7 @@
 
         function onPlayerReady(event) {
             const unmuteBtn = document.getElementById('unmuteButton');
-            if (player.isMuted()) {
-                unmuteBtn.style.display = 'flex';
-            }
-            
+            if (player.isMuted()) { unmuteBtn.style.display = 'flex'; }
             unmuteBtn.addEventListener('click', () => {
                 player.unMute();
                 unmuteBtn.style.display = 'none';
