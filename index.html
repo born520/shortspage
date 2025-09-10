@@ -48,30 +48,13 @@
 
         function onYouTubeIframeAPIReady() {
             if (videoIds && videoIds.length > 0) {
-                loadVideo(currentVideoIndex);
-            } else {
-                document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
-            }
-        }
-
-        function loadVideo(index) {
-            if (index >= videoIds.length) {
-                // 모든 영상을 다 재생했으면 처음부터 다시
-                index = 0;
-                currentVideoIndex = 0;
-            }
-
-            const videoId = videoIds[index];
-            if (player) {
-                player.loadVideoById(videoId);
-            } else {
                 player = new YT.Player('player', {
                     height: '100%', 
                     width: '100%', 
-                    videoId: videoId,
+                    videoId: videoIds[0],
                     playerVars: { 
                         'autoplay': 1, 'mute': 1, 'controls': 1, 'rel': 0, 
-                        'playsinline': 1
+                        'playsinline': 1, 'loop': 1, 'playlist': videoIds.join(',')
                     },
                     events: { 
                         'onReady': onPlayerReady, 
@@ -79,6 +62,8 @@
                         'onError': onPlayerError
                     }
                 });
+            } else {
+                document.getElementById('player-container').innerHTML = "<h1>재생할 영상이 없습니다.</h1>";
             }
         }
 
@@ -106,7 +91,7 @@
                 // 에러 메시지 숨김
                 document.getElementById('errorMessage').style.display = 'none';
             } else if (event.data === YT.PlayerState.ENDED) {
-                // 영상이 끝나면 다음 영상으로
+                // 영상이 끝나면 다음 영상으로 자동 이동 (playlist 기능 활용)
                 playNextVideo();
             }
         }
@@ -134,7 +119,10 @@
             // 최대 재시도 횟수 확인
             if (retryCount < maxRetries) {
                 retryCount++;
-                loadVideo(currentVideoIndex);
+                
+                // 다음 영상 로드
+                const nextVideoId = videoIds[currentVideoIndex];
+                player.loadVideoById(nextVideoId);
             } else {
                 document.getElementById('player-container').innerHTML = 
                     "<h1 style='color: white; text-align: center;'>모든 영상에서 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.</h1>";
