@@ -8,25 +8,23 @@
             margin: 0; padding: 0; width: 100%; height: 100%; 
             overflow: hidden; background-color: #000; 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            touch-action: pan-y; /* 세로 스와이프만 허용 */
         }
         
         #player-container { 
             position: relative; width: 100%; height: 100%; 
             display: flex; justify-content: center; align-items: center;
-            touch-action: pan-y; /* 세로 스와이프 활성화 */
         }
         
         #player { 
             max-width: calc(100vh * 9 / 16); width: 100%; height: 100%;
-            pointer-events: none; /* YouTube 컨트롤과 스와이프 충돌 방지 */
         }
         
-        /* 터치 영역 오버레이 */
+        /* 모바일용 터치 오버레이 */
         #touchOverlay {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             z-index: 5; background: transparent;
-            display: flex; align-items: center; justify-content: center;
+            display: none; /* 기본적으로 숨김 */
+            pointer-events: none;
         }
         
         #unmuteButton {
@@ -53,13 +51,38 @@
             backdrop-filter: blur(10px); border: 2px solid rgba(255, 255, 255, 0.2);
         }
         
-        /* 스와이프 인디케이터 */
+        /* 데스크톱용 컨트롤 버튼들 */
+        #desktopControls {
+            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 15px; z-index: 15;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(40, 40, 40, 0.6));
+            padding: 12px 25px; border-radius: 25px; backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border: 2px solid rgba(255, 255, 255, 0.3); color: white; 
+            padding: 10px 18px; border-radius: 20px; cursor: pointer;
+            font-size: 14px; font-weight: 500; transition: all 0.3s ease;
+            backdrop-filter: blur(5px); user-select: none;
+        }
+        .control-btn:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            border-color: rgba(255, 255, 255, 0.6); transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+        }
+        .control-btn:active { transform: translateY(0); }
+        
+        /* 모바일용 스와이프 인디케이터 */
         #swipeIndicator {
             position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
-            color: rgba(255, 255, 255, 0.6); font-size: 14px; z-index: 15;
-            background: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 15px;
-            text-align: center; line-height: 1.4; backdrop-filter: blur(10px);
-            transition: opacity 0.3s ease; max-width: 120px;
+            color: rgba(255, 255, 255, 0.7); font-size: 14px; z-index: 15;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(40, 40, 40, 0.4));
+            padding: 15px; border-radius: 15px; text-align: center; line-height: 1.4; 
+            backdrop-filter: blur(10px); transition: opacity 0.3s ease; max-width: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1); display: none;
         }
         
         #videoInfo {
@@ -81,22 +104,37 @@
             opacity: 1; transform: translate(-50%, -50%) scale(1.2);
         }
         
+        /* 데스크톱 감지 및 스타일 */
+        @media (hover: hover) and (pointer: fine) {
+            /* 데스크톱 환경 */
+            #desktopControls { display: flex; }
+            #swipeIndicator { display: none !important; }
+            #touchOverlay { display: none !important; }
+            #player { pointer-events: auto; } /* YouTube 컨트롤 활성화 */
+        }
+        
+        /* 터치 디바이스 감지 */
+        @media (hover: none) and (pointer: coarse) {
+            /* 모바일 환경 */
+            #desktopControls { display: none !important; }
+            #swipeIndicator { display: block; }
+            #touchOverlay { display: block; pointer-events: auto; }
+            #player { pointer-events: none; } /* YouTube 컨트롤과 스와이프 충돌 방지 */
+        }
+        
         /* 반응형 디자인 */
         @media (max-width: 480px) {
             #unmuteButton { font-size: 18px; padding: 4vw 2vw; }
             #videoInfo { font-size: 12px; padding: 8px; }
             #swipeIndicator { font-size: 12px; padding: 10px; right: 10px; }
+            .control-btn { padding: 8px 14px; font-size: 12px; }
         }
         
         @media (orientation: landscape) and (max-height: 500px) {
             #videoInfo { top: 10px; font-size: 12px; padding: 8px; }
             #swipeIndicator { font-size: 11px; padding: 8px; }
-        }
-        
-        /* 터치 디바이스 최적화 */
-        @media (hover: none) and (pointer: coarse) {
-            #player { pointer-events: auto; } /* 모바일에서는 YouTube 컨트롤 활성화 */
-            #swipeIndicator { opacity: 0.8; }
+            #desktopControls { bottom: 10px; padding: 8px 20px; }
+            .control-btn { padding: 6px 12px; font-size: 12px; }
         }
     </style>
     <meta property="og:title" content="나만의 쇼츠 플레이어"/>
@@ -118,9 +156,17 @@
         </div>
         
         <div id="videoInfo">
-            <span id="currentVideoIndex">1</span> / <span id="totalVideos">4</span>
+            <span id="currentVideoIndex">1</span> / <span id="totalVideos">2</span>
         </div>
         
+        <!-- 데스크톱용 컨트롤 -->
+        <div id="desktopControls">
+            <button class="control-btn" id="prevBtn">⏮️ 이전</button>
+            <button class="control-btn" id="playPauseBtn">⏸️ 일시정지</button>
+            <button class="control-btn" id="nextBtn">⏭️ 다음</button>
+        </div>
+        
+        <!-- 모바일용 스와이프 가이드 -->
         <div id="swipeIndicator">
             📱<br>
             ⬆️ 이전 영상<br>
@@ -132,7 +178,7 @@
     </div>
     
     <script>
-        const videoIds = ["dceb3YKNMwM","ZGNX8dN-O64","Tw-NFkaIhYg","bqIrVuXGApk"];
+        const videoIds = ["1Vnatnqgo2c","r3a_oOeY2ws"];
         let player;
         let currentVideoIndex = 0;
         let retryCount = 0;
@@ -144,8 +190,8 @@
         let startY = 0;
         let startTime = 0;
         let isSwipeLocked = false;
-        const minSwipeDistance = 50; // 최소 스와이프 거리
-        const maxSwipeTime = 500; // 최대 스와이프 시간 (ms)
+        const minSwipeDistance = 50;
+        const maxSwipeTime = 500;
 
         function onYouTubeIframeAPIReady() {
             if (videoIds && videoIds.length > 0) {
@@ -167,8 +213,6 @@
                 
                 document.getElementById('totalVideos').textContent = videoIds.length;
                 updateVideoInfo();
-                setupSwipeListeners();
-                hideIndicatorAfterDelay();
             } else {
                 document.getElementById('player-container').innerHTML = 
                     "<h1 style='color: white; text-align: center;'>재생할 영상이 없습니다.</h1>";
@@ -188,14 +232,123 @@
                 unmuteBtn.style.display = 'none';
             });
             
+            // 디바이스 타입에 따른 컨트롤 설정
+            const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            
+            if (isDesktop) {
+                // 데스크톱: 버튼 컨트롤 활성화
+                setupDesktopControls();
+                console.log('데스크톱 컨트롤 활성화');
+            } else {
+                // 모바일: 스와이프 컨트롤 활성화
+                setupSwipeListeners();
+                hideIndicatorAfterDelay();
+                console.log('모바일 스와이프 컨트롤 활성화');
+            }
+            
             document.getElementById('errorMessage').style.display = 'none';
             retryCount = 0;
             updateVideoInfo();
         }
 
+        function setupDesktopControls() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            
+            if (prevBtn) prevBtn.addEventListener('click', playPreviousVideo);
+            if (nextBtn) nextBtn.addEventListener('click', playNextVideo);
+            if (playPauseBtn) playPauseBtn.addEventListener('click', togglePlayPause);
+        }
+
+        function setupSwipeListeners() {
+            const container = document.getElementById('touchOverlay');
+            if (!container) return;
+            
+            let isSwipeEnabled = true;
+            
+            // 디바이스 타입 재확인
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            
+            if (isDesktop || !isTouchDevice) {
+                console.log('데스크톱 환경 - 스와이프 비활성화');
+                return;
+            }
+            
+            console.log('모바일 환경 - 스와이프 활성화');
+            
+            // 터치 시작
+            container.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1 && isSwipeEnabled) {
+                    startY = e.touches[0].clientY;
+                    startTime = Date.now();
+                }
+            }, { passive: true });
+            
+            // 터치 이동 중
+            container.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1) {
+                    const currentY = e.touches[0].clientY;
+                    const deltaY = Math.abs(startY - currentY);
+                    
+                    if (deltaY > 20) {
+                        e.preventDefault();
+                    }
+                }
+            }, { passive: false });
+            
+            // 터치 끝
+            container.addEventListener('touchend', (e) => {
+                if (e.changedTouches.length === 1 && isSwipeEnabled) {
+                    const endY = e.changedTouches[0].clientY;
+                    const endTime = Date.now();
+                    const deltaY = startY - endY;
+                    const deltaTime = endTime - startTime;
+                    
+                    if (Math.abs(deltaY) > minSwipeDistance && deltaTime < maxSwipeTime) {
+                        isSwipeEnabled = false;
+                        
+                        if (deltaY > 0) {
+                            playPreviousVideo();
+                        } else {
+                            playNextVideo();
+                        }
+                        
+                        setTimeout(() => {
+                            isSwipeEnabled = true;
+                        }, 1000);
+                    }
+                }
+            }, { passive: true });
+            
+            // 터치 (탭)
+            container.addEventListener('click', (e) => {
+                const unmuteBtn = document.getElementById('unmuteButton');
+                if (unmuteBtn.style.display !== 'none') return;
+                
+                const rect = container.getBoundingClientRect();
+                const clickY = e.clientY - rect.top;
+                const containerHeight = rect.height;
+                
+                if (clickY > containerHeight * 0.8) {
+                    return;
+                }
+                
+                togglePlayPause();
+            });
+        }
+
         function onPlayerStateChange(event) {
+            const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            
             if (event.data === YT.PlayerState.PLAYING) {
                 isPlaying = true;
+                
+                if (isDesktop) {
+                    const playPauseBtn = document.getElementById('playPauseBtn');
+                    if (playPauseBtn) playPauseBtn.innerHTML = '⏸️ 일시정지';
+                }
                 
                 const unmuteBtn = document.getElementById('unmuteButton');
                 if (!player.isMuted()) {
@@ -205,8 +358,12 @@
                 document.getElementById('errorMessage').style.display = 'none';
             } else if (event.data === YT.PlayerState.PAUSED) {
                 isPlaying = false;
+                
+                if (isDesktop) {
+                    const playPauseBtn = document.getElementById('playPauseBtn');
+                    if (playPauseBtn) playPauseBtn.innerHTML = '▶️ 재생';
+                }
             } else if (event.data === YT.PlayerState.ENDED) {
-                // 자동으로 다음 영상으로 이동 (무한 루프)
                 playNextVideo();
             }
         }
@@ -220,7 +377,6 @@
             }, 3000);
         }
 
-        // 🔄 무한 루프 다음 영상 재생
         function playNextVideo() {
             if (isSwipeLocked) return;
             isSwipeLocked = true;
@@ -228,11 +384,9 @@
             currentVideoIndex++;
             if (currentVideoIndex >= videoIds.length) {
                 currentVideoIndex = 0;
-                console.log('마지막 영상 도달, 첫 번째 영상으로 이동');
             }
             
             const nextVideoId = videoIds[currentVideoIndex];
-            console.log(`다음 영상 재생: ${nextVideoId} (인덱스: ${currentVideoIndex})`);
             player.loadVideoById(nextVideoId);
             updateVideoInfo();
             showSwipeFeedback('⬇️');
@@ -240,7 +394,6 @@
             setTimeout(() => { isSwipeLocked = false; }, 1000);
         }
 
-        // 🔄 무한 루프 이전 영상 재생  
         function playPreviousVideo() {
             if (isSwipeLocked) return;
             isSwipeLocked = true;
@@ -248,11 +401,9 @@
             currentVideoIndex--;
             if (currentVideoIndex < 0) {
                 currentVideoIndex = videoIds.length - 1;
-                console.log('첫 번째 영상에서 마지막 영상으로 이동');
             }
             
             const prevVideoId = videoIds[currentVideoIndex];
-            console.log(`이전 영상 재생: ${prevVideoId} (인덱스: ${currentVideoIndex})`);
             player.loadVideoById(prevVideoId);
             retryCount = 0;
             updateVideoInfo();
@@ -282,11 +433,13 @@
 
         function showSwipeFeedback(icon) {
             const feedback = document.getElementById('swipeFeedback');
-            feedback.textContent = icon;
-            feedback.classList.add('show');
-            setTimeout(() => {
-                feedback.classList.remove('show');
-            }, 300);
+            if (feedback) {
+                feedback.textContent = icon;
+                feedback.classList.add('show');
+                setTimeout(() => {
+                    feedback.classList.remove('show');
+                }, 300);
+            }
         }
 
         function hideIndicatorAfterDelay() {
@@ -301,50 +454,7 @@
             }, 8000);
         }
 
-        // 📱 스와이프 리스너 설정
-        function setupSwipeListeners() {
-            const container = document.getElementById('touchOverlay');
-            
-            // 터치 시작
-            container.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1) {
-                    startY = e.touches[0].clientY;
-                    startTime = Date.now();
-                }
-            }, { passive: true });
-            
-            // 터치 끝 (스와이프 감지)
-            container.addEventListener('touchend', (e) => {
-                if (e.changedTouches.length === 1) {
-                    const endY = e.changedTouches[0].clientY;
-                    const endTime = Date.now();
-                    const deltaY = startY - endY;
-                    const deltaTime = endTime - startTime;
-                    
-                    // 스와이프 조건 확인
-                    if (Math.abs(deltaY) > minSwipeDistance && deltaTime < maxSwipeTime) {
-                        if (deltaY > 0) {
-                            // 위로 스와이프 = 이전 영상
-                            playPreviousVideo();
-                        } else {
-                            // 아래로 스와이프 = 다음 영상
-                            playNextVideo();
-                        }
-                    }
-                }
-            }, { passive: true });
-            
-            // 터치 (탭) - 재생/일시정지
-            container.addEventListener('click', (e) => {
-                // 음소거 버튼이 보이는 상태에서는 탭 무시
-                const unmuteBtn = document.getElementById('unmuteButton');
-                if (unmuteBtn.style.display !== 'none') return;
-                
-                togglePlayPause();
-            });
-        }
-
-        // 키보드 단축키 지원 (데스크톱용)
+        // 키보드 단축키
         document.addEventListener('keydown', (e) => {
             switch(e.key) {
                 case 'ArrowUp':
@@ -371,7 +481,6 @@
         // 화면 방향 변경 감지
         window.addEventListener('orientationchange', () => {
             setTimeout(() => {
-                // 방향 변경 후 플레이어 크기 재조정
                 if (player && player.getIframe) {
                     const iframe = player.getIframe();
                     iframe.style.width = '100%';
