@@ -4,177 +4,84 @@
     <base target="_top">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-    body, html { 
-        margin: 0; padding: 0; width: 100%; height: 100%; 
-        overflow: hidden; background-color: #000; 
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
+    #player-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+    #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
+    #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5; }
+    #unmuteButton { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 25px; font-size: 18px; font-weight: bold; color: white; background: rgba(0, 0, 0, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 30px; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); }
+    #videoInfo { display: none; }
+    
+    /* [개선] 데스크톱 환경에서는 터치 오버레이를 숨기고, 플레이어 이벤트를 활성화 */
+    @media (hover: hover) and (pointer: fine) {
+      #player { pointer-events: auto; }
+      #touchOverlay { display: none; }
     }
-    #player-container { 
-        position: relative; width: 100%; height: 100%; 
-        display: flex; justify-content: center; align-items: center;
-    }
-    #player { 
-        max-width: calc(100vh * 9 / 16); width: 100%; height: 100%;
-        pointer-events: none; /* 모든 환경에서 플레이어 직접 터치/클릭 방지 */
-    }
-    #touchOverlay {
-        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-        z-index: 5;
-    }
-    #unmuteButton {
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        padding: 15px 25px; font-size: 18px; font-weight: bold; color: white; 
-        background: rgba(0, 0, 0, 0.7);
-        border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 30px; 
-        cursor: pointer; z-index: 10;
-        backdrop-filter: blur(10px);
-    }
-    #errorMessage {
-        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        color: white; background: rgba(200, 0, 0, 0.8);
-        padding: 20px; border-radius: 15px; text-align: center; max-width: 80%;
-        display: none; z-index: 20;
-    }
-    /* [수정] 영상 카운트 숨김 처리 */
-    #videoInfo {
-        display: none;
+    /* 모바일 환경에서는 터치 오버레이를 사용하기 위해 플레이어 이벤트 비활성화 */
+    @media (hover: none) and (pointer: coarse) {
+      #player { pointer-events: none; }
     }
 </style>
     <meta property="og:title" content="나만의 쇼츠 플레이어"/>
     <meta property="og:description" content="최신 쇼츠를 연속으로 재생합니다"/>
-    <meta property="og:image" content=""/>
-    <meta property="og:url" content=""/>
-    <meta property="og:type" content="website" />
 </head>
 <body>
-    <div id="player-container">
-        <div id="player"></div>
-        <div id="touchOverlay"></div>
-        <button id="unmuteButton">🔊 소리 켜기</button>
-        <div id="errorMessage"></div>
-        <div id="videoInfo">
-            <span id="currentVideoIndex">1</span> / <span id="totalVideos">1</span>
-        </div>
-    </div>
-    
+    <div id="player-container"><div id="player"></div><div id="touchOverlay"></div><button id="unmuteButton">🔊 소리 켜기</button></div>
     <script>
         const videoIds = ["7Gsa74jeJYA"];
-        let player;
-        let currentVideoIndex = 0;
+        let player, currentVideoIndex = 0;
 
         function onYouTubeIframeAPIReady() {
-            if (videoIds && videoIds.length > 0) {
-                player = new YT.Player('player', {
-                    height: '100%', width: '100%', 
-                    videoId: videoIds[0],
-                    playerVars: { 
-                        'autoplay': 1, 'mute': 1, 'controls': 0, 'rel': 0, 
-                        'playsinline': 1, 'loop': 1, 'playlist': videoIds.join(','),
-                        'modestbranding': 1, 'iv_load_policy': 3
-                    },
-                    events: { 
-                        'onReady': onPlayerReady, 
-                        'onStateChange': onPlayerStateChange,
-                        'onError': onPlayerError
-                    }
-                });
-            } else {
-                document.getElementById('player-container').innerHTML = 
-                    "<h1 style='color: white; text-align: center;'>재생할 영상이 없습니다.</h1>";
+            if (!videoIds || videoIds.length === 0) {
+                document.getElementById('player-container').innerHTML = "<h1 style='color: white; text-align: center;'>재생할 영상이 없습니다.</h1>";
+                return;
             }
+            // [개선] 데스크톱인지 확인하여 controls 옵션 동적 설정
+            const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            player = new YT.Player('player', {
+                height: '100%', width: '100%', videoId: videoIds[0],
+                playerVars: { 
+                    'autoplay': 1, 'mute': 1, 'rel': 0, 'playsinline': 1, 
+                    'loop': 1, 'playlist': videoIds.join(','),
+                    'controls': isDesktop ? 1 : 0 // 데스크톱이면 컨트롤 표시, 모바일이면 숨김
+                },
+                events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': onPlayerError }
+            });
         }
-
         function onPlayerReady(event) {
             const unmuteBtn = document.getElementById('unmuteButton');
-            if (player.isMuted()) { 
-                unmuteBtn.style.display = 'block'; 
-            }
-            unmuteBtn.addEventListener('click', () => {
-                player.unMute();
-                player.playVideo(); // iOS에서 음소거 해제 후 자동재생 안될 때를 대비
-                unmuteBtn.style.display = 'none';
-            });
+            if (player.isMuted()) unmuteBtn.style.display = 'block';
+            unmuteBtn.addEventListener('click', () => { player.unMute(); unmuteBtn.style.display = 'none'; });
             setupSwipeListeners();
         }
-
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                const unmuteBtn = document.getElementById('unmuteButton');
-                if (!player.isMuted()) {
-                    unmuteBtn.style.display = 'none';
-                }
-            } else if (event.data === YT.PlayerState.ENDED) {
-                playNextVideo();
-            }
+            if (event.data === YT.PlayerState.PLAYING && !player.isMuted()) {
+                document.getElementById('unmuteButton').style.display = 'none';
+            } else if (event.data === YT.PlayerState.ENDED) { player.nextVideo(); }
         }
-        
-        function onPlayerError(event) {
-            console.log('플레이어 오류:', event.data, '다음 영상으로 넘어갑니다.');
-            setTimeout(playNextVideo, 1000); // 1초 후 다음 영상으로
-        }
-        
+        function onPlayerError(event) { setTimeout(() => player.nextVideo(), 1000); }
         function setupSwipeListeners() {
             const container = document.getElementById('touchOverlay');
-            if (!container) return;
-            
-            let startY = 0;
-            let isSwipeLocked = false;
-            
-            container.addEventListener('touchstart', (e) => {
-                if (e.touches.length === 1 && !isSwipeLocked) {
-                    startY = e.touches[0].clientY;
+            let startY = 0, isSwipeLocked = false;
+            container.addEventListener('touchstart', e => { if (e.touches.length === 1) startY = e.touches[0].clientY; }, { passive: true });
+            container.addEventListener('touchend', e => {
+                if (isSwipeLocked) return;
+                const deltaY = startY - e.changedTouches[0].clientY;
+                if (Math.abs(deltaY) > 50) {
+                    isSwipeLocked = true;
+                    if (deltaY > 0) player.nextVideo(); else player.previousVideo();
+                    setTimeout(() => { isSwipeLocked = false; }, 500);
                 }
             }, { passive: true });
-            
-            container.addEventListener('touchend', (e) => {
-                if (e.changedTouches.length === 1 && !isSwipeLocked) {
-                    const endY = e.changedTouches[0].clientY;
-                    const deltaY = startY - endY;
-                    
-                    if (Math.abs(deltaY) > 50) { // 50px 이상 움직이면 스와이프로 간주
-                        isSwipeLocked = true;
-                        if (deltaY > 0) {
-                            playNextVideo(); // 위로 스와이프 = 다음 영상
-                        } else {
-                            playPreviousVideo(); // 아래로 스와이프 = 이전 영상
-                        }
-                        setTimeout(() => { isSwipeLocked = false; }, 700); // 0.7초 딜레이
-                    }
-                }
-            }, { passive: true });
-
-            // [수정] 터치 시 재생/정지하는 'click' 이벤트 리스너 제거
         }
-
-        function playNextVideo() {
-            player.nextVideo();
-        }
-
-        function playPreviousVideo() {
-            player.previousVideo();
-        }
-
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowUp':
-                case 'ArrowLeft':
-                    e.preventDefault();
-                    playPreviousVideo();
-                    break;
-                case 'ArrowDown':
-                case 'ArrowRight':
-                    e.preventDefault();
-                    playNextVideo();
-                    break;
-                case ' ':
-                    e.preventDefault();
-                    const playerState = player.getPlayerState();
-                    if (playerState === YT.PlayerState.PLAYING) {
-                        player.pauseVideo();
-                    } else {
-                        player.playVideo();
-                    }
-                    break;
+        document.addEventListener('keydown', e => {
+            if(e.key.startsWith('Arrow')) {
+                e.preventDefault();
+                if(e.key === 'ArrowUp' || e.key === 'ArrowLeft') player.previousVideo();
+                else if(e.key === 'ArrowDown' || e.key === 'ArrowRight') player.nextVideo();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                const state = player.getPlayerState();
+                if(state === 1) player.pauseVideo(); else player.playVideo();
             }
         });
     </script>
