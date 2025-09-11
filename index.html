@@ -1,31 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <base target="_top">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <style>
-    body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
-    #player-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-    #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; }
-    #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5; }
-    #unmuteButton { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 25px; font-size: 18px; font-weight: bold; color: white; background: rgba(0, 0, 0, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 30px; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); }
-    #videoInfo { display: none; }
-    @media (hover: hover) and (pointer: fine) { #player { pointer-events: auto; } #touchOverlay { display: none; } }
-    @media (hover: none) and (pointer: coarse) { #player { pointer-events: none; } }
-</style>
-    <meta property="og:title" content="나만의 쇼츠 플레이어"/>
-    <meta property="og:description" content="최신 쇼츠를 연속으로 재생합니다"/>
-</head>
-<body>
-    <div id="player-container"><div id="player"></div><div id="touchOverlay"></div><button id="unmuteButton">🔊 소리 켜기</button></div>
-    <script>
+<!DOCTYPE html><html><head><base target="_top"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><style>body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; } #player-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; } #player { max-width: calc(100vh * 9 / 16); width: 100%; height: 100%; } #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5; } #unmuteButton { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 25px; font-size: 18px; font-weight: bold; color: white; background: rgba(0, 0, 0, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 30px; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); } #videoInfo { display: none; } @media (hover: hover) and (pointer: fine) { #player { pointer-events: auto; } #touchOverlay { display: none; } } @media (hover: none) and (pointer: coarse) { #player { pointer-events: none; } }</style><meta property="og:title" content="나만의 쇼츠 플레이어"/><meta property="og:description" content="최신 쇼츠를 연속으로 재생합니다"/></head><body><div id="player-container"><div id="player"></div><div id="touchOverlay"></div><button id="unmuteButton">🔊 소리 켜기</button></div><script>
         const videoIds = ["IwLD6m7xJx8","viWlGbpLA9M","tjNXKsp96Jo","g53rzZorSHE","TFuLA56vwPU","ADNcPL12HoY","0iRzYtg85SQ","b7SbhB8BXRE","iD3CA1N6s8s","rzNk-f0CvWs","PUh-su4oplA","yUp1JigUg9Q"];
         let player;
         function onYouTubeIframeAPIReady() {
-            if (!videoIds || videoIds.length === 0) {
-                document.getElementById('player-container').innerHTML = "<h1 style='color: white; text-align: center;'>재생할 영상이 없습니다.</h1>";
-                return;
-            }
+            if (!videoIds || videoIds.length === 0) { document.getElementById('player-container').innerHTML = "<h1 style='color: white; text-align: center;'>재생할 영상이 없습니다.</h1>"; return; }
             const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
             player = new YT.Player('player', {
                 height: '100%', width: '100%', videoId: videoIds[0],
@@ -69,7 +46,4 @@
                 if(state === 1) player.pauseVideo(); else player.playVideo();
             }
         });
-    </script>
-    <script async src="https://www.youtube.com/iframe_api"></script>
-</body>
-</html>
+    </script><script async src="https://www.youtube.com/iframe_api"></script></body></html>
