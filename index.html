@@ -10,16 +10,8 @@
     #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 5; }
     #unmuteButton { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 25px; font-size: 18px; font-weight: bold; color: white; background: rgba(0, 0, 0, 0.7); border: 2px solid rgba(255, 255, 255, 0.8); border-radius: 30px; cursor: pointer; z-index: 10; backdrop-filter: blur(10px); }
     #videoInfo { display: none; }
-    
-    /* [개선] 데스크톱 환경에서는 터치 오버레이를 숨기고, 플레이어 이벤트를 활성화 */
-    @media (hover: hover) and (pointer: fine) {
-      #player { pointer-events: auto; }
-      #touchOverlay { display: none; }
-    }
-    /* 모바일 환경에서는 터치 오버레이를 사용하기 위해 플레이어 이벤트 비활성화 */
-    @media (hover: none) and (pointer: coarse) {
-      #player { pointer-events: none; }
-    }
+    @media (hover: hover) and (pointer: fine) { #player { pointer-events: auto; } #touchOverlay { display: none; } }
+    @media (hover: none) and (pointer: coarse) { #player { pointer-events: none; } }
 </style>
     <meta property="og:title" content="나만의 쇼츠 플레이어"/>
     <meta property="og:description" content="최신 쇼츠를 연속으로 재생합니다"/>
@@ -27,23 +19,17 @@
 <body>
     <div id="player-container"><div id="player"></div><div id="touchOverlay"></div><button id="unmuteButton">🔊 소리 켜기</button></div>
     <script>
-        const videoIds = ["c2oBHTu70co","IwLD6m7xJx8","yUp1JigUg9Q","rui-EsR_bs4","_gfe7ObCs_M","7Gsa74jeJYA","PGSI5HHHob8","iD3CA1N6s8s","653tVJMRZUU","9gCQRnbXLB4","S_iX678Dxhw","viWlGbpLA9M","Fgc0sPnk0lg","tjNXKsp96Jo","MyD3AC8LGAQ","rzNk-f0CvWs","LSRQAq1TyRQ","BJk0XfwZsk8","PUh-su4oplA"];
-        let player, currentVideoIndex = 0;
-
+        const videoIds = ["IwLD6m7xJx8","viWlGbpLA9M","tjNXKsp96Jo","g53rzZorSHE","TFuLA56vwPU","ADNcPL12HoY","0iRzYtg85SQ","b7SbhB8BXRE","iD3CA1N6s8s","rzNk-f0CvWs","PUh-su4oplA","yUp1JigUg9Q"];
+        let player;
         function onYouTubeIframeAPIReady() {
             if (!videoIds || videoIds.length === 0) {
                 document.getElementById('player-container').innerHTML = "<h1 style='color: white; text-align: center;'>재생할 영상이 없습니다.</h1>";
                 return;
             }
-            // [개선] 데스크톱인지 확인하여 controls 옵션 동적 설정
             const isDesktop = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
             player = new YT.Player('player', {
                 height: '100%', width: '100%', videoId: videoIds[0],
-                playerVars: { 
-                    'autoplay': 1, 'mute': 1, 'rel': 0, 'playsinline': 1, 
-                    'loop': 1, 'playlist': videoIds.join(','),
-                    'controls': isDesktop ? 1 : 0 // 데스크톱이면 컨트롤 표시, 모바일이면 숨김
-                },
+                playerVars: { 'autoplay': 1, 'mute': 1, 'rel': 0, 'playsinline': 1, 'loop': 1, 'playlist': videoIds.join(','), 'controls': isDesktop ? 1 : 0 },
                 events: { 'onReady': onPlayerReady, 'onStateChange': onPlayerStateChange, 'onError': onPlayerError }
             });
         }
@@ -54,9 +40,8 @@
             setupSwipeListeners();
         }
         function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING && !player.isMuted()) {
-                document.getElementById('unmuteButton').style.display = 'none';
-            } else if (event.data === YT.PlayerState.ENDED) { player.nextVideo(); }
+            if (event.data === YT.PlayerState.PLAYING && !player.isMuted()) document.getElementById('unmuteButton').style.display = 'none';
+            else if (event.data === YT.PlayerState.ENDED) player.nextVideo();
         }
         function onPlayerError(event) { setTimeout(() => player.nextVideo(), 1000); }
         function setupSwipeListeners() {
