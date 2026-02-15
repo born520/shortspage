@@ -6,7 +6,7 @@
 <style>
   body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #000; }
   #player-container { position: relative; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; }
-  #player { width: 100%; height: 100vh; max-width: calc(100vh * 9 / 16); }
+  #player { width: 100%; height: 100vh; max-width: calc(100vh * 9 / 16); pointer-events: none; }
   #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; cursor: pointer; -webkit-tap-highlight-color: transparent; }
   #unmuteButton { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); padding: 15px 25px;     font-size: 18px; color: white; background: rgba(0,0,0,0.8); border: 1px solid #fff; border-radius: 30px; z-index: 20; cursor: pointer; }
 </style>
@@ -18,7 +18,7 @@
   <button id="unmuteButton">🔊 소리 켜기</button>
 </div>
 <script>
-  var videoIds = ["1xdsnGLoUIY","c-Ij3xFIGKk","HBl9bSLmJ28","dsN5SVKvjNk","3kKQJaFHFnI","441thNvKWz0","jHxvu1saq-U","Ir7cgVgN6ps","zOO9UkZeyTU","AJNs4CqR6hM","0RElmnX8eh4","vwuyWLQKBLA","QZ-JU5_Y9qY","8TZg0TkNthk","k1Tl4kgh7L8","J6W15MK2-KM","_MX8DYnza_o","7Q1Y3MnCiXk","n4GqtCDNStw","EAYUNC8zy3w","-bAs28wXRXo","vhg4-SjMVRQ"];
+  var videoIds = ["j7upBooqR5A","NmGR7ZTQlWA","dY5lAeygnUM","_Jgei7h4kGk","AGdUd4UY_oY","alKUUFK4x4c","XT3H33wkSwQ","yVVL40bt270","_k3eD6ApZIs","Fh0hqWuQTz4","0kusPWEvkFY","SFZaOopEVaA","1xdsnGLoUIY","SHPe39lpZlI","sbDZ-g9b0PU","R4U0xWtQmCk","EHCUUILbUuI","1KoV6XgBP04","5XvrJwyyI3Y","fzxt1AcehCY","9TJRkPOMlkI","dckCcEgZksE","9Jcm0rb3TNo","3zqzU-zjpD8","c-Ij3xFIGKk","dJ_FO7qObew","uvgmaZajbF8","NGlwR1BTFgM","Xt4SW9gL8gg","UEk_86_MVhU","FhKAkseti5g","HBl9bSLmJ28","-tOW_pPoyNM","BzLXCKYPtBg","p7j3mHeRwU0","G9G2ZczSLBQ","M_0yoZqQ6R8","EtFzj3seP44","I2-tLYeLDts","NEwt_wdiM24","bWTQXLyfGxk","W4V7IYmIeYs","vcfjH0c9lUc","-R88urAjB54","xHY9v5ybSU4","E-B-vB2YkWs","kDb1_2dcZ5o","-J3bIsjWpik","zwIydM55l2A","Issr1EqkL4s","dsN5SVKvjNk","xZc395oX6n4","7xTz8oWYABQ","fNNsx_obHhQ","LTUzZz4wInE","CubxLXzp9BI","GoybM8VxoSM","TSyGgPaaEjw","iYYtxPaKASk","GF3ws4gRhf0","gN0gPhiHEvk","cx86Ia7EpsU","oIaKGr04jJI","t84pxe4MWgA","3kKQJaFHFnI","441thNvKWz0","EHNEUIfd6tE","TmBuEoqvmKQ","jHxvu1saq-U","6iyXIOjksgA","cfTkohN8o5k","pqWkdwGn3BU","e579OkhlXIA","ge1s-yJ4n2o","PH2z82VwSaE","VoE430j7CmE","K9FYzSbUwjY","Ir7cgVgN6ps","zOO9UkZeyTU","3QREnt4VQO0","Gm01W9Trfeo","KsvMqOW38mM","uoTDQ2MZ-JM","GU9NVirmOzA","ymmxt1TII3c","AJNs4CqR6hM","0RElmnX8eh4","vwuyWLQKBLA","QZ-JU5_Y9qY","8TZg0TkNthk","k1Tl4kgh7L8","J6W15MK2-KM","_MX8DYnza_o","7Q1Y3MnCiXk","n4GqtCDNStw","EAYUNC8zy3w","-bAs28wXRXo","vhg4-SjMVRQ","ttgw9HOnKXY","5FfPrj010SU","2B-ultqc78A","GPV749sdp5E","_PE_cy4MX6M","dXQ7kMEsACk","3EBJeM6rSks","kMPHwQPnEr0","YcNQjl7xtgM","1jDGHA4rcpo","HMr2wTS4YCM","m3rOe_HVnmg","51sHxmJjfS0","X4i65qemEZM","piCIihD4Qx8","zqW3PrAqezQ","PCMf1e_3k7M","8KDpEc_GK0w","-XCZ50ZYM6w","3vl8T2aRwTs","sj1VdwrcGDI","NtdOCA5flaI","Rz8Vwps1T7U","i6G68eH-nwk","9B_RjAxIVS0","jlLH2y8w4Vs","MR_-OMv0o7s"];
   var player; var currentIndex = 0;
   function onYouTubeIframeAPIReady() {
     if (!videoIds || videoIds.length === 0) return;
@@ -52,7 +52,7 @@
       var duration = Date.now() - startTime;
       if (Math.abs(deltaY) > 50) {
         if (deltaY > 0) nextVideo(); else prevVideo();
-      } else if (duration < 300) {
+      } else if (duration < 250) {
         var state = player.getPlayerState();
         if (state === 1) player.pauseVideo(); else player.playVideo();
       }
