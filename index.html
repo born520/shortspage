@@ -8,11 +8,13 @@
   #player-container { position: relative; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
   #player { width: 100%; height: 100vh; max-width: calc(100vh * 9 / 16); pointer-events: none; }
   #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; cursor: grab; -webkit-tap-highlight-color: transparent; touch-action: none; }
-  /* 유튜브 스타일 중앙 아이콘 */
-  .ui-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px;     background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center;     z-index: 30; opacity: 0; transition: opacity 0.3s, transform 0.2s; pointer-events: none; }
-  .ui-overlay.active { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-  .ui-overlay svg { width: 40px; height: 40px; fill: white; }
-  .nav-guide { position: absolute; top: 20px; width: 100%; text-align: center; color: rgba(255,255,255,0.4); font-size: 11px; z-index: 15; }
+  /* 유튜브 스타일 피드백 아이콘 */
+  .ui-icon-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px;     background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center;     z-index: 30; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
+  .ui-icon-wrap.active { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+  .ui-icon-wrap svg { width: 40px; height: 40px; fill: white; }
+  .nav-dots { position: absolute; top: 20px; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 15; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+  .dot.active { background: #fff; width: 14px; border-radius: 10px; }
 </style>
 </head>
 <body>
@@ -20,9 +22,9 @@
   <div id="player"></div>
   <div id="touchOverlay"></div>
   
-  <div id="playIcon" class="ui-overlay active"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
-  <div id="pauseIcon" class="ui-overlay"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></div>
-  <div class="nav-guide">Page 1 (Swipe L/R to Page, U/D to Video)</div>
+  <div id="playIcon" class="ui-icon-wrap active"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+  <div id="pauseIcon" class="ui-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></div>
+  <div class="nav-dots"></div>
 </div>
 <script>
   var videoIds = ["zSXGHFkvwuk","j7upBooqR5A","dY5lAeygnUM","O8ByazilTYk","_Jgei7h4kGk","AGdUd4UY_oY","8Pz2Se7uOeY","nUi-j_VYTEs","XT3H33wkSwQ","yVVL40bt270","Fh0hqWuQTz4","XilJwxccDg0","SHPe39lpZlI","VVcNIBZdqKY","sbDZ-g9b0PU","IRQmUW2Z0R8","fzxt1AcehCY","9TJRkPOMlkI","9Jcm0rb3TNo","WVsgEZV-ZVU","dJ_FO7qObew","Xt4SW9gL8gg","p7j3mHeRwU0","EtFzj3seP44","x6LND9CaYIo","vcfjH0c9lUc","yu7gbjpanV0","E-B-vB2YkWs","kDb1_2dcZ5o","-J3bIsjWpik","hVUTYMioM54","zwIydM55l2A","xZc395oX6n4","7xTz8oWYABQ","GoybM8VxoSM","TSyGgPaaEjw","iYYtxPaKASk","gN0gPhiHEvk","cx86Ia7EpsU","8ct0qB_kE84","oIaKGr04jJI","dPQJTD43l6Q","t84pxe4MWgA","7mVL3KAwf3k","T0cXz008KhQ","OoQk4bOtZxw","EHNEUIfd6tE","NrQqvFicv88","a_tBIVO0U-s","6iyXIOjksgA","cfTkohN8o5k","pqWkdwGn3BU","e579OkhlXIA","ge1s-yJ4n2o","PH2z82VwSaE","VoE430j7CmE","K9FYzSbUwjY","Ir7cgVgN6ps","zOO9UkZeyTU","3QREnt4VQO0","Gm01W9Trfeo","KsvMqOW38mM","uoTDQ2MZ-JM","GU9NVirmOzA","ymmxt1TII3c","AJNs4CqR6hM","0RElmnX8eh4","vwuyWLQKBLA","QZ-JU5_Y9qY","8TZg0TkNthk","k1Tl4kgh7L8","J6W15MK2-KM","_MX8DYnza_o","7Q1Y3MnCiXk","n4GqtCDNStw","EAYUNC8zy3w","-bAs28wXRXo","vhg4-SjMVRQ","ttgw9HOnKXY","5FfPrj010SU","2B-ultqc78A","GPV749sdp5E","_PE_cy4MX6M","dXQ7kMEsACk","3EBJeM6rSks","kMPHwQPnEr0","YcNQjl7xtgM","51sHxmJjfS0","X4i65qemEZM","piCIihD4Qx8"];
@@ -31,17 +33,19 @@
   var player; var currentIndex = 0;
   function onYouTubeIframeAPIReady() {
     if (!videoIds || videoIds.length === 0) return;
-    var isStarted = sessionStorage.getItem("yt_started") === "true";
+    var isStarted = sessionStorage.getItem("yt_active") === "true";
     player = new YT.Player("player", {
-      height: "100%", width: "100%", videoId: videoIds[0],
+      height: "100%", width: "100%", videoId: videoIds[0], 
       playerVars: { "autoplay": isStarted?1:0, "mute": isStarted?0:1, "playsinline": 1, "controls": 0, "rel": 0 },
       events: { "onStateChange": onStateChange, "onReady": onPlayerReady }
     });
   }
   function onPlayerReady() {
-    if (sessionStorage.getItem("yt_started") === "true") {
+    if (sessionStorage.getItem("yt_active") === "true") {
        player.playVideo(); player.unMute(); document.getElementById("playIcon").classList.remove("active");
     }
+    var nav = document.querySelector(".nav-dots");
+    allPages.forEach(function(p){ var d=document.createElement("div"); d.className=(p===currentPage)?"dot active":"dot"; nav.appendChild(d); });
     setupControls();
   }
   function onStateChange(event) { if (event.data === YT.PlayerState.ENDED) nextVideo(); }
@@ -54,7 +58,7 @@
     }
   }
   function togglePlay() {
-    sessionStorage.setItem("yt_started", "true");
+    sessionStorage.setItem("yt_active", "true");
     var state = player.getPlayerState();
     var pIcon = document.getElementById("playIcon");
     var sIcon = document.getElementById("pauseIcon");
@@ -62,20 +66,20 @@
       player.pauseVideo(); pIcon.classList.add("active"); sIcon.classList.remove("active");
     } else {
       player.unMute(); player.playVideo(); pIcon.classList.remove("active"); sIcon.classList.add("active");
-      setTimeout(function(){ sIcon.classList.remove("active"); }, 500);
+      setTimeout(function(){ sIcon.classList.remove("active"); }, 600);
     }
   }
   function setupControls() {
     var overlay = document.getElementById("touchOverlay");
     var startX = 0, startY = 0, startTime = 0, isDown = false;
-    overlay.onpointerdown = function(e) { startX = e.clientX; startY = e.clientY; startTime = Date.now(); isDown = true; };
-    overlay.onpointerup = function(e) {
+    overlay.addEventListener("pointerdown", function(e) { startX = e.clientX; startY = e.clientY; startTime = Date.now(); isDown = true; });
+    overlay.addEventListener("pointerup", function(e) {
       if(!isDown) return; isDown = false;
       var dx = startX - e.clientX; var dy = startY - e.clientY; var dur = Date.now() - startTime;
       if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 60) { if (dx > 0) changePage(1); else changePage(-1); }
       else if (Math.abs(dy) > 40) { if (dy > 0) nextVideo(); else prevVideo(); }
       else if (dur < 250) { togglePlay(); }
-    };
+    });
     window.onwheel = function(e) { if (Math.abs(e.deltaY) > 50) { if (e.deltaY > 0) nextVideo(); else prevVideo(); } };
     window.onkeydown = function(e) {
       if (e.key === "ArrowDown") nextVideo(); else if (e.key === "ArrowUp") prevVideo();
