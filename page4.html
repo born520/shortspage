@@ -8,7 +8,6 @@
   #player-container { position: relative; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
   #player { width: 100%; height: 100vh; max-width: calc(100vh * 9 / 16); pointer-events: none; }
   #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; cursor: grab; -webkit-tap-highlight-color: transparent; touch-action: none; }
-  /* 유튜브 스타일 피드백 아이콘 */
   .ui-icon-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px;     background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center;     z-index: 30; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
   .ui-icon-wrap.active { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
   .ui-icon-wrap svg { width: 40px; height: 40px; fill: white; }
@@ -21,13 +20,12 @@
 <div id="player-container">
   <div id="player"></div>
   <div id="touchOverlay"></div>
-  
   <div id="playIcon" class="ui-icon-wrap active"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
   <div id="pauseIcon" class="ui-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></div>
   <div class="nav-dots"></div>
 </div>
 <script>
-  var videoIds = ["AE7p1uUsADA","0lMlgF4nfJA","FGDFlrYbuIk","Uj-z_zlAH5A","HN1NXJom-HQ","b2PIJinnUIs","-EoP_rVaiBE","8alDFP8P3SY","ZjP7XxSlpjU","9PFo-gJT-e4","cQqXca24T9M","41N3_ZRCVWA","j_pWCH9WHJ0","Jy_H0xONjnw","27-thaRSXCA","GV4dwcUGIJY","qgL0h5D49Kg","SD2Pf2uOIf0","DCr7Bf1qGyw","vYNmqjHdj6s","FdSe7AUTo_Q","hF-33s5h6fk","RVYIYjwY4cA","s28LoRgn1og","XW8-IDm66gY","3xxK32b5Z2E","N0dqfhjXH4c","gWJ3oTcePRA","gns7olLoJ7Q","nQrRiDRfzd8","JYSn9XGGFB0","fEJ5YDH0wX8","PDwJlORWGK0","WxvAZpo0nJs","A6YGhgZtLlE","z5KFOqJlFqw","q0rehXHrIQg","DJRsqe-pCBA","R-4QAmgqnHs","BpblzhSpaXo","CC-Mmam85FY","h7dxtMd6nro","3-wCes_ZTvQ","Ji3n-6IaD2I","f-AC4E-CF8E","54e-FO71X-U","1B884lFpM_8","1Ekrc8HND7s","INtvWb1sepM","-KKQkgWsVDs","bpSWg72AfbQ","RfPYML97s3Y","AAAZwrI4YRc","0_8DNTUxyIM","DLxKMSj445w","rQWQsffxU-I","2QmPYkMXgVU","Kwv1jpYJDsQ","gQkjAcBWGGg","IjH3IVyhzKc"];
+  var videoIds = ["RQ2iXL49VhY","hAtkFA59f0Q","HhdbavM-gdg","gUO36YwiKbA","w954BngMbzw","O_ponIZxRx0","kbUQOCbuN5E","fvq0MYRzaVQ","6kdiIvpXyJI","0LY5Qvno7O4","ETvzo9aiqQU","dUZzqHcoYZo","ouIrWKTmif0","RI5G8LMCFWg","9XuRv_6pKUc","i052lCm9ZI0","YoAGrkJQKkY","rZaHoUSJBnA","xoOn3YO_avU","MkK6KD7XT1Q","tR_7jx8N_ps","H7O63V1nqX8","URvqdGTy-jY","h8pyTjUVRDQ","zurIXl5sKBA","2_7v23PPshY","z80ofXpTIQ8","pbjcjEXq_0s","VJqzPYskjmA","K5n_qwN7VPY","fFpy1kYlkJE","WGFP6YvDlGw","AE7p1uUsADA","0lMlgF4nfJA","FGDFlrYbuIk","Uj-z_zlAH5A","HN1NXJom-HQ","b2PIJinnUIs","-EoP_rVaiBE","8alDFP8P3SY","ZjP7XxSlpjU","9PFo-gJT-e4","41N3_ZRCVWA","j_pWCH9WHJ0","Jy_H0xONjnw","qgL0h5D49Kg","SD2Pf2uOIf0","vYNmqjHdj6s","hF-33s5h6fk","RVYIYjwY4cA","XW8-IDm66gY","N0dqfhjXH4c","WxvAZpo0nJs","A6YGhgZtLlE","q0rehXHrIQg","R-4QAmgqnHs","h7dxtMd6nro","54e-FO71X-U","-KKQkgWsVDs","RfPYML97s3Y"];
   var allPages = ["1","2","3","4","5"];
   var currentPage = "4";
   var player; var currentIndex = 0;
