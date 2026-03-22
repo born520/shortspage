@@ -8,7 +8,6 @@
   #player-container { position: relative; width: 100%; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
   #player { width: 100%; height: 100vh; max-width: calc(100vh * 9 / 16); pointer-events: none; }
   #touchOverlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; cursor: grab; -webkit-tap-highlight-color: transparent; touch-action: none; }
-  /* 유튜브 스타일 피드백 아이콘 */
   .ui-icon-wrap { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px;     background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center;     z-index: 30; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); pointer-events: none; }
   .ui-icon-wrap.active { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
   .ui-icon-wrap svg { width: 40px; height: 40px; fill: white; }
@@ -21,13 +20,12 @@
 <div id="player-container">
   <div id="player"></div>
   <div id="touchOverlay"></div>
-  
   <div id="playIcon" class="ui-icon-wrap active"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
   <div id="pauseIcon" class="ui-icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></div>
   <div class="nav-dots"></div>
 </div>
 <script>
-  var videoIds = ["iQM_M3XYL7c","kmADXRnkdQg","rb-JgbT90jU","hXDjqWiEaCc","cIE_KqumSaQ","EoWPfA1V5HA","NmGR7ZTQlWA","_k3eD6ApZIs","JEfaYHaSctk","1xdsnGLoUIY","R4U0xWtQmCk","Yn74RlbNt90","EHCUUILbUuI","5XvrJwyyI3Y","dckCcEgZksE","c-Ij3xFIGKk","uvgmaZajbF8","NGlwR1BTFgM","UEk_86_MVhU","HBl9bSLmJ28","G9G2ZczSLBQ","M_0yoZqQ6R8","I2-tLYeLDts","NEwt_wdiM24","bWTQXLyfGxk","p2jP5-r07CI","eeJz8HAyTk0","dsN5SVKvjNk","WPT1llBjxgQ","3kKQJaFHFnI"];
+  var videoIds = ["4xEjYkQut3A","iQM_M3XYL7c","kmADXRnkdQg","rb-JgbT90jU","hXDjqWiEaCc","cIE_KqumSaQ","EoWPfA1V5HA","NmGR7ZTQlWA","_k3eD6ApZIs","JEfaYHaSctk","1xdsnGLoUIY","R4U0xWtQmCk","Yn74RlbNt90","EHCUUILbUuI","5XvrJwyyI3Y","dckCcEgZksE","c-Ij3xFIGKk","uvgmaZajbF8","NGlwR1BTFgM","UEk_86_MVhU","HBl9bSLmJ28","G9G2ZczSLBQ","M_0yoZqQ6R8","I2-tLYeLDts","NEwt_wdiM24","bWTQXLyfGxk","p2jP5-r07CI","eeJz8HAyTk0","dsN5SVKvjNk","WPT1llBjxgQ"];
   var allPages = ["1","2","3","4","5"];
   var currentPage = "2";
   var player; var currentIndex = 0;
